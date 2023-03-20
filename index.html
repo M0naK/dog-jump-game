@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>犬ジャンプゲーム</title>
+  <style>
+    /* CSSコードをここに追加 */
+    body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+#game-container {
+  position: relative;
+  height: 200px;
+  width: 100%;
+  overflow: hidden;
+}
+
+#dog, #obstacle {
+  position: absolute;
+  bottom: 0;
+}
+
+#dog {
+  background-image: url('dog-image-url'); /* 犬のイラストのURLに置き換えてください */
+  background-size: contain;
+  width: 50px;
+  height: 50px;
+}
+
+#obstacle {
+  background-color: red;
+  width: 30px;
+  height: 30px;
+  right: -30px;
+}
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="dog"></div>
+    <div id="obstacle"></div>
+  </div>
+  <script>
+    // JavaScriptコードをここに追加
+    const dog = document.getElementById('dog');
+const obstacle = document.getElementById('obstacle');
+let isJumping = false;
+let score = 0;
+
+document.addEventListener('click', () => {
+  if (!isJumping) {
+    jump();
+  }
+});
+
+function jump() {
+  isJumping = true;
+  let start = Date.now();
+
+  let interval = setInterval(() => {
+    let elapsedTime = Date.now() - start;
+
+    if (elapsedTime > 1000) {
+      clearInterval(interval);
+      isJumping = false;
+      return;
+    }
+
+    let height = Math.sin(elapsedTime / 1000 * Math.PI) * 100;
+    dog.style.bottom = height + 'px';
+  }, 20);
+}
+
+function moveObstacle() {
+  let obstaclePosition = window.innerWidth;
+
+  let obstacleInterval = setInterval(() => {
+    obstaclePosition -= 5;
+    obstacle.style.right = obstaclePosition + 'px';
+
+    if (obstaclePosition < -30) {
+      obstaclePosition = window.innerWidth;
+      score += 100;
+    }
+
+    let dogBottom = parseInt(dog.style.bottom);
+    let isCollision = (obstaclePosition >= window.innerWidth - 50) &&
+                      (obstaclePosition <= window.innerWidth) &&
+                      (dogBottom <= 30);
+
+    if (isCollision) {
+      clearInterval(obstacleInterval);
+      gameOver();
+    }
+
+  }, 20);
+}
+
+function gameOver() {
+  alert('ゲームオーバー！ スコア: ' + score);
+  score = 0;
+  obstacle.style.right = '-30px';
+  moveObstacle();
+}
+
+moveObstacle();
+
+  </script>
+</body>
+</html>
